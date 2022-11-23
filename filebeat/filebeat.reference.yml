@@ -381,6 +381,16 @@ filebeat.modules:
     # Optional, the password to use when connecting to Redis.
     #var.password:
 
+#-------------------------------- Rsync Module --------------------------------
+- module: rsync
+  # All logs
+  log:
+    enabled: false
+
+    # Set custom paths for the log files. If left empty,
+    # Filebeat will choose the paths depending on your OS.
+    #var.paths:
+
 #----------------------------- Google Santa Module -----------------------------
 - module: santa
   log:

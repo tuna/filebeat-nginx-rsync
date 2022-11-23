@@ -79,6 +79,7 @@ grouped in the following categories:
 * <<exported-fields-rabbitmq>>
 * <<exported-fields-radware>>
 * <<exported-fields-redis>>
+* <<exported-fields-rsync>>
 * <<exported-fields-s3>>
 * <<exported-fields-salesforce>>
 * <<exported-fields-santa>>
@@ -124875,6 +124876,18 @@ The arguments with which the command was called.
 type: keyword
 
 --
+
+[[exported-fields-rsync]]
+== rsync fields
+
+rsync Module
+
+
+
+[float]
+=== rsync
+
+
 
 [[exported-fields-s3]]
 == s3 fields

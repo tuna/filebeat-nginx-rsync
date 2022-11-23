@@ -1,0 +1,9 @@
+- key: rsync
+  title: "rsync"
+  description: >
+    rsync Module
+  fields:
+    - name: rsync
+      type: group
+      description: >
+      fields:

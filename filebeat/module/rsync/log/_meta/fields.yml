@@ -1,0 +1,48 @@
+- name: log
+  description: Please add description
+  example: Please add example
+  type: group
+  fields:
+  - name: address
+    description: Please add description
+    example: Please add example
+  - name: module
+    description: Please add description
+    example: Please add example
+    type: text
+  - name: backend
+    description: Please add description
+    example: Please add example
+    type: text
+  - name: status
+    description: Please add description
+    example: Please add example
+    type: long
+  - name: bytes_received
+    description: Please add description
+    example: Please add example
+    type: long
+  - name: bytes_sent
+    description: Please add description
+    example: Please add example
+    type: long
+  - name: session_time
+    description: Please add description
+    example: Please add example
+    type: text
+  - name: rsync_cli_ver
+    description: Please add description
+    example: Please add example
+    type: text
+  - name: rsync_neg_ver
+    description: Please add description
+    example: Please add example
+    type: text
+  - name: nginx_pid
+    description: Please add description
+    example: Please add example
+    type: text
+  - name: ip
+    description: Please add description
+    example: Please add example
+    type: ip

@@ -1,0 +1,3 @@
+dashboards:
+- id: Filebeat-rsync-log-Dashboard
+  file: Filebeat-rsync-log.json

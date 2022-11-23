@@ -1,0 +1,107 @@
+{
+  "description": "Pipeline for parsing Nginx Rsync logs.",
+  "processors": [
+    {
+      "set": {
+        "field": "event.ingested",
+        "value": "{{_ingest.timestamp}}"
+      }
+    },
+    {
+      "grok": {
+        "field": "message",
+        "patterns": [
+          "(?:%{NOTSPACE:rsync.log.address}) - - \\[%{HTTPDATE:rsync.log.time}\\] \"%{DATA:rsync.log.module}\" %{DATA:rsync.log.backend} %{NUMBER:rsync.log.status:long} %{NUMBER:rsync.log.bytes_received:long} %{NUMBER:rsync.log.bytes_sent:long} %{NUMBER:rsync.log.session_time:float} rsync/(-|%{DATA:rsync.log.rsync_cli_ver}) rsyncd/(-|%{DATA:rsync.log.rsync_neg_ver}) nginx\\[%{DATA:rsync.log.nginx_pid}\\]"
+        ],
+        "ignore_missing": true
+      }
+    },
+    {
+      "grok": {
+        "field": "rsync.log.address",
+        "patterns": [
+          "^%{IP:rsync.log.ip}$"
+        ],
+        "ignore_failure": true
+      }
+    },
+    {
+      "remove": {
+        "field": "message"
+      }
+    },
+    {
+      "rename": {
+        "field": "@timestamp",
+        "target_field": "event.created"
+      }
+    },
+    {
+      "date": {
+        "field": "rsync.log.time",
+        "target_field": "@timestamp",
+        "formats": [
+          "dd/MMM/yyyy:H:m:s Z"
+        ],
+        "on_failure": [
+          {
+            "append": {
+              "field": "error.message",
+              "value": "{{ _ingest.on_failure_message }}"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "remove": {
+        "field": "rsync.log.time"
+      }
+    },
+    {
+      "geoip": {
+        "field": "rsync.log.ip",
+        "target_field": "rsync.log.geo",
+        "ignore_missing": true
+      }
+    },
+    {
+      "geoip": {
+        "database_file": "GeoLite2-ASN.mmdb",
+        "field": "rsync.log.ip",
+        "target_field": "rsync.log.as",
+        "properties": [
+          "asn",
+          "organization_name"
+        ],
+        "ignore_missing": true
+      }
+    },
+    {
+      "set": {
+        "field": "event.kind",
+        "value": "event"
+      }
+    },
+    {
+      "append": {
+        "field": "event.category",
+        "value": "rsync"
+      }
+    },
+    {
+      "append": {
+        "field": "event.type",
+        "value": "log"
+      }
+    }
+  ],
+  "on_failure": [
+    {
+      "set": {
+        "field": "error.message",
+        "value": "{{ _ingest.on_failure_message }}"
+      }
+    }
+  ]
+}
