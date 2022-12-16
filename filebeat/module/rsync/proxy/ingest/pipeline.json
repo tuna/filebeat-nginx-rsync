@@ -1,0 +1,116 @@
+{
+  "description": "Pipeline for parsing Nginx Rsync proxys.",
+  "processors": [
+    {
+      "set": {
+        "field": "event.ingested",
+        "value": "{{_ingest.timestamp}}"
+      }
+    },
+    {
+      "grok": {
+        "field": "message",
+        "patterns": [
+          "(?:%{NOTSPACE:rsync.proxy.address}) via %{NOTSPACE:rsync.proxy.frontend} - - \\[%{HTTPDATE:rsync.proxy.time}\\] \"%{DATA:rsync.proxy.module}\" %{DATA:rsync.proxy.backend} %{NUMBER:rsync.proxy.status:long} %{NUMBER:rsync.proxy.bytes_received:long} %{NUMBER:rsync.proxy.bytes_sent:long} %{NUMBER:rsync.proxy.session_time:float} rsync/(-|%{DATA:rsync.proxy.rsync_cli_ver}) rsyncd/(-|%{DATA:rsync.proxy.rsync_neg_ver}) nginx\\[%{DATA:rsync.proxy.nginx_pid}\\]"
+        ],
+        "ignore_missing": true
+      }
+    },
+    {
+      "grok": {
+        "field": "rsync.proxy.address",
+        "patterns": [
+          "^%{IP:rsync.proxy.ip}$"
+        ],
+        "ignore_failure": true
+      }
+    },
+    {
+      "grok": {
+        "field": "rsync.proxy.frontend",
+        "patterns": [
+          "^%{IP:rsync.proxy.frontend_ip}$"
+        ],
+        "ignore_failure": true
+      }
+    },
+    {
+      "remove": {
+        "field": "message"
+      }
+    },
+    {
+      "rename": {
+        "field": "@timestamp",
+        "target_field": "event.created"
+      }
+    },
+    {
+      "date": {
+        "field": "rsync.proxy.time",
+        "target_field": "@timestamp",
+        "formats": [
+          "dd/MMM/yyyy:H:m:s Z"
+        ],
+        "on_failure": [
+          {
+            "append": {
+              "field": "error.message",
+              "value": "{{ _ingest.on_failure_message }}"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "remove": {
+        "field": "rsync.proxy.time"
+      }
+    },
+    {
+      "geoip": {
+        "field": "rsync.proxy.ip",
+        "target_field": "rsync.proxy.geo",
+        "ignore_missing": true
+      }
+    },
+    {
+      "geoip": {
+        "database_file": "GeoLite2-ASN.mmdb",
+        "field": "rsync.proxy.ip",
+        "target_field": "rsync.proxy.as",
+        "properties": [
+          "asn",
+          "organization_name"
+        ],
+        "ignore_missing": true
+      }
+    },
+    {
+      "set": {
+        "field": "event.kind",
+        "value": "event"
+      }
+    },
+    {
+      "append": {
+        "field": "event.category",
+        "value": "rsync"
+      }
+    },
+    {
+      "append": {
+        "field": "event.type",
+        "value": "proxy"
+      }
+    }
+  ],
+  "on_failure": [
+    {
+      "set": {
+        "field": "error.message",
+        "value": "{{ _ingest.on_failure_message }}"
+      }
+    }
+  ]
+}
